@@ -1,4 +1,4 @@
-package com.example.weater
+package com.example.weather
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.weater.ui.theme.WeaterTheme
+import com.example.weather.ui.theme.WeaterTheme
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -23,10 +23,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
+import com.example.weater.R
 
 
 @Composable
-fun WeaterCell(city: City) {
+fun WeatherCard(city: City) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -84,8 +85,8 @@ fun WeaterCell(city: City) {
 
 @Preview(showBackground = true)
 @Composable
-fun WeaterCellPreview() {
+fun WeatherCellPreview() {
     WeaterTheme {
-        WeaterCell(City("Paris"))
+        WeatherCard(City("Paris"))
     }
 }

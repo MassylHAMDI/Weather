@@ -1,18 +1,17 @@
-package com.example.weater
+package com.example.weather
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.weater.ui.theme.WeaterTheme
+import com.example.weather.ui.theme.WeaterTheme
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
+import com.example.weater.R
 
 import java.util.Calendar
 
@@ -37,9 +37,11 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
     val dayText = android.text.format.DateFormat.format("dd MMMM", calendar).toString().lowercase()
 
     //
-    val cities = listOf(City("London",icon = null, temperature = null, weather = null),
+    val cities = listOf(
+        City("London",icon = null, temperature = null, weather = null),
         City("Paris",icon = null, temperature = null, weather = null),
-        City("New York",icon = null, temperature = null, weather = null))
+        City("New York",icon = null, temperature = null, weather = null)
+    )
 
 
     Box(modifier = Modifier.fillMaxSize()){
@@ -71,7 +73,7 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
             LazyColumn(modifier = Modifier.height(450.dp)) {
                 cities.forEach { city ->
                     item {
-                        WeaterCell(city)
+                        WeatherCard(city)
                     }
                 }
             }
