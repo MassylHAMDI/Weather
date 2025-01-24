@@ -17,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.padding
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import com.example.weater.R
@@ -25,7 +26,7 @@ import java.util.Calendar
 
 
 @Composable
-fun HomeScreen(name: String, modifier: Modifier = Modifier) {
+fun HomeScreen() {
 
     // Get the current hour
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -42,8 +43,6 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
         City("Paris",icon = null, temperature = null, weather = null),
         City("New York",icon = null, temperature = null, weather = null)
     )
-
-
     Box(modifier = Modifier.fillMaxSize()){
         Image(painter = painterResource(id = backgroundImage),
             contentDescription = null,
@@ -75,8 +74,13 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
                     item {
                         WeatherCard(city)
                     }
+
+                }
+                item {
+                    AddCityCell(onClick = {})
                 }
             }
+
         }
     }
 
@@ -87,6 +91,6 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun HomeScreenPreview() {
     WeaterTheme {
-        HomeScreen("Android")
+        HomeScreen()
     }
 }
