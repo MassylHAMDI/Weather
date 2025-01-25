@@ -1,3 +1,5 @@
+package com.example.weather
+
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton

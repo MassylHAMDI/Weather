@@ -1,6 +1,7 @@
 package com.example.weather
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,11 +28,12 @@ import com.example.weater.R
 
 
 @Composable
-fun WeatherCard(city: City) {
+fun WeatherCard(city: City, onCityClick: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(onClick = onCityClick),
         colors = CardDefaults.cardColors(
             containerColor = Color.Gray.copy(alpha = 0.3f)),
         shape = RoundedCornerShape(90.dp)
@@ -87,6 +89,6 @@ fun WeatherCard(city: City) {
 @Composable
 fun WeatherCellPreview() {
     WeaterTheme {
-        WeatherCard(City("Paris"))
+        WeatherCard(City("Paris"), onCityClick = {})
     }
 }

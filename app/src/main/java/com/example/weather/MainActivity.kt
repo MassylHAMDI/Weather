@@ -21,9 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WeaterTheme {
-                Scaffold {
-                    HomeScreen( )
-                }
+                WeatherNavigation()
             }
         }
     }
