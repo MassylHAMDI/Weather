@@ -1,4 +1,4 @@
-package com.example.weather
+package com.example.weather.ui.screens.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +19,9 @@ import androidx.navigation.NavController
 import com.example.weather.ui.theme.WeaterTheme
 import java.util.Calendar
 import com.example.weater.R
+import com.example.weather.ui.screens.detail.AddCityDialog
+import com.example.weather.ui.screens.home.components.WeatherCard
+import com.example.weather.data.City
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

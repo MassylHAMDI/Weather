@@ -1,4 +1,4 @@
-package com.example.weather
+package com.example.weather.ui.screens.detail
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
