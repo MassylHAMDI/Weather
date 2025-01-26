@@ -58,7 +58,7 @@ fun WeatherCard(city: City, onCityClick: () -> Unit) {
                     modifier = Modifier.size(40.dp)
                 )
                 Text(
-                    text = "12°",
+                    text = "${city?.temperature ?: 0}°",
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.padding(start = 8.dp),
                     color = Color.White
@@ -90,6 +90,6 @@ fun WeatherCard(city: City, onCityClick: () -> Unit) {
 @Composable
 fun WeatherCellPreview() {
     WeaterTheme {
-        WeatherCard(City("Paris"), onCityClick = {})
+        WeatherCard(city = City(name = "Paris"), onCityClick = {})
     }
 }

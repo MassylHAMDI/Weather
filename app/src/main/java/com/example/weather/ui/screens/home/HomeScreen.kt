@@ -16,22 +16,37 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.room.Room
 import com.example.weather.ui.theme.WeaterTheme
 import java.util.Calendar
 import com.example.weater.R
+import com.example.weather.data.AppDatabase
+
 import com.example.weather.ui.screens.detail.AddCityDialog
 import com.example.weather.ui.screens.home.components.WeatherCard
 import com.example.weather.data.City
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     var showAddDialog by remember { mutableStateOf(false) }
-    var cities by remember { mutableStateOf(listOf(
+    /*var cities by remember { mutableStateOf(listOf(
         City("London"),
         City("Paris"),
         City("New York")
-    )) }
+    )) }*/
+
+
+    val applicationContext = LocalContext.current
+    val db = remember { Room.databaseBuilder(applicationContext, AppDatabase::class.java, "weather_database").build()}
+    val scope = rememberCoroutineScope()
+    var cities by remember { mutableStateOf(emptyList<City>()) }
+    LaunchedEffect(Unit) {
+        scope.launch {
+            cities = db.cityDao().getAll()
+        }
+    }
 
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
     val backgroundImage = if (currentHour in 6..18) R.drawable.after_noon else R.drawable.night
@@ -102,7 +117,11 @@ fun HomeScreen(navController: NavController) {
         AddCityDialog(
             onDismiss = { showAddDialog = false },
             onAddCity = { name ->
-                cities = cities + City(name)
+                scope.launch {
+                    val newCity = City(name = name)
+                    db.cityDao().insert(newCity)
+                    cities = db.cityDao().getAll()
+                }
                 showAddDialog = false
             }
         )
