@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import com.example.weater.R
 import com.example.weather.data.City
+import coil.compose.AsyncImage
 
 
 @Composable
@@ -38,7 +39,6 @@ fun WeatherCard(city: City, onCityClick: () -> Unit) {
         colors = CardDefaults.cardColors(
             containerColor = Color.Gray.copy(alpha = 0.3f)),
         shape = RoundedCornerShape(90.dp)
-
     ) {
         Column(
             modifier = Modifier
@@ -52,13 +52,22 @@ fun WeatherCard(city: City, onCityClick: () -> Unit) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.sun),
-                    contentDescription = "Weather Icon",
-                    modifier = Modifier.size(40.dp)
-                )
+                if (city.icon != null) {
+                    AsyncImage(
+                        model = "https://openweathermap.org/img/wn/${city.icon}@2x.png",
+                        contentDescription = "Weather Icon",
+                        modifier = Modifier.size(40.dp)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.sun),
+                        contentDescription = "Weather Icon",
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
+
                 Text(
-                    text = "${city?.temperature ?: 0}°",
+                    text = "${city.temperature?.toInt() ?: 0}°",
                     style = MaterialTheme.typography.headlineLarge,
                     modifier = Modifier.padding(start = 8.dp),
                     color = Color.White
@@ -80,6 +89,14 @@ fun WeatherCard(city: City, onCityClick: () -> Unit) {
                     color = Color.White,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+
+            city.weather?.let { weather ->
+                Text(
+                    text = weather,
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }

@@ -21,6 +21,6 @@ interface CityDao {
     suspend fun delete(city: City)
 
     @Update
-    suspend fun upadate(city: City)
+    suspend fun update(city: City)
 
 }

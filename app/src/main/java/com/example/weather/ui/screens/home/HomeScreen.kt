@@ -1,5 +1,168 @@
 package com.example.weather.ui.screens.home
+
+// HomeScreen.kt
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.room.Room
+import com.example.weater.R
+import com.example.weather.data.AppDatabase
+import com.example.weather.service.WeatherService
+import com.example.weather.ui.screens.detail.AddCityDialog
+import com.example.weather.ui.screens.home.components.WeatherCard
+import com.example.weather.data.City
+import kotlinx.coroutines.launch
+import java.util.Calendar
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(navController: NavController) {
+    val weatherService = remember { WeatherService() }
+    var showAddDialog by remember { mutableStateOf(false) }
+
+    val applicationContext = LocalContext.current
+    val db = remember { Room.databaseBuilder(applicationContext, AppDatabase::class.java, "weather_database").build() }
+    val scope = rememberCoroutineScope()
+    var cities by remember { mutableStateOf(emptyList<City>()) }
+
+    // Fetch initial data
+    LaunchedEffect(Unit) {
+        scope.launch {
+            cities = db.cityDao().getAll()
+            // Update weather for each city
+            cities.forEach { city ->
+                weatherService.getWeather(city.name)
+                    .onSuccess { response ->
+                        val updatedCity = city.copy(
+                            temperature = response.main.temp,
+                            weather = response.weather.firstOrNull()?.main,
+                            icon = response.weather.firstOrNull()?.icon
+                        )
+                        db.cityDao().update(updatedCity)
+                    }
+            }
+            cities = db.cityDao().getAll()
+        }
+    }
+
+    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    val backgroundImage = if (currentHour in 6..18) R.drawable.after_noon else R.drawable.night
+
+    val calendar = Calendar.getInstance()
+    val timeText = android.text.format.DateFormat.format("HH:mm", calendar).toString()
+    val dayText = android.text.format.DateFormat.format("dd MMMM", calendar).toString().lowercase()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = backgroundImage),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        Column {
+            TopAppBar(
+                title = { },
+                actions = {
+                    IconButton(onClick = { showAddDialog = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add city",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(60.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = timeText,
+                    fontSize = 70.sp,
+                    color = Color.White
+                )
+                Text(
+                    text = dayText,
+                    fontSize = 20.sp,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
+
+            LazyColumn(modifier = Modifier.height(300.dp)) {
+                cities.forEach { city ->
+                    item {
+                        WeatherCard(
+                            city = city,
+                            onCityClick = {
+                                navController.navigate("detail/${city.name}")
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (showAddDialog) {
+        AddCityDialog(
+            onDismiss = { showAddDialog = false },
+            onAddCity = { name ->
+                scope.launch {
+                    val newCity = City(name = name)
+                    db.cityDao().insert(newCity)
+                    // Fetch weather for new city
+                    weatherService.getWeather(name)
+                        .onSuccess { response ->
+                            val updatedCity = newCity.copy(
+                                temperature = response.main.temp,
+                                weather = response.weather.firstOrNull()?.main,
+                                icon = response.weather.firstOrNull()?.icon
+                            )
+                            db.cityDao().update(updatedCity)
+                        }
+                    cities = db.cityDao().getAll()
+                }
+                showAddDialog = false
+            }
+        )
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -31,11 +194,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(navController: NavController) {
     var showAddDialog by remember { mutableStateOf(false) }
-    /*var cities by remember { mutableStateOf(listOf(
+    *//*var cities by remember { mutableStateOf(listOf(
         City("London"),
         City("Paris"),
         City("New York")
-    )) }*/
+    )) }*//*
 
 
     val applicationContext = LocalContext.current
@@ -134,7 +297,7 @@ fun HomeScreenPreview() {
     WeaterTheme {
         HomeScreen( navController = NavController(LocalContext.current))
     }
-}
+}*/
 
 /*
 package com.example.weather
