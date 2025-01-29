@@ -3,21 +3,27 @@
 package com.example.weather.ui.screens.detail.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -30,22 +36,30 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
+import coil.compose.AsyncImage
 import com.example.weater.R
 import com.example.weather.data.AppDatabase
 import com.example.weather.data.City
 import com.example.weather.ui.theme.WeaterTheme
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(cityName: String, navController: NavController) {
     val context = LocalContext.current
@@ -60,21 +74,31 @@ fun DetailScreen(cityName: String, navController: NavController) {
             city = db.cityDao().getCityByName(cityName)
         }
     }
+
     suspend fun deleteCity() {
         city?.let {
             db.cityDao().delete(it)
             navController.navigateUp()
         }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.after_noon),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
+        // Background gradient
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF6B8DD6),
+                            Color(0xFF8F6BD6)
+                        )
+                    )
+                )
         )
 
         Column {
+            // Custom TopAppBar with transparent background
             TopAppBar(
                 title = { },
                 navigationIcon = {
@@ -103,55 +127,123 @@ fun DetailScreen(cityName: String, navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = city?.name ?: "",
-                    fontSize = 40.sp,
-                    color = Color.White
-                )
+                // City name with location icon
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Location",
+                        tint = Color.White.copy(alpha = 0.9f),
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Text(
+                        text = city?.name ?: "",
+                        style = MaterialTheme.typography.displaySmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            shadow = Shadow(
+                                color = Color.Black.copy(alpha = 0.3f),
+                                offset = androidx.compose.ui.geometry.Offset(2f, 2f),
+                                blurRadius = 8f
+                            )
+                        ),
+                        color = Color.White,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
 
+                // Weather card with glass effect
                 Card(
                     modifier = Modifier
                         .padding(vertical = 24.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .graphicsLayer {
+                            shadowElevation = 8.dp.toPx()
+                            shape = RoundedCornerShape(28.dp)
+                            clip = true
+                        },
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.Gray.copy(alpha = 0.3f)
+                        containerColor = Color.White.copy(alpha = 0.15f)
                     ),
                     shape = RoundedCornerShape(28.dp)
                 ) {
                     Column(
                         modifier = Modifier
-                            .padding(24.dp)
+                            .padding(32.dp)
                             .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.sun),
-                            contentDescription = "Weather",
-                            modifier = Modifier.size(120.dp)
-                        )
+                        // Weather icon with halo effect
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(120.dp)
+                                .background(
+                                    brush = Brush.radialGradient(
+                                        colors = listOf(
+                                            Color.White.copy(alpha = 0.2f),
+                                            Color.Transparent
+                                        )
+                                    ),
+                                    shape = CircleShape
+                                )
+                        ) {
+                            if (city?.icon != null) {
+                                AsyncImage(
+                                    model = "https://openweathermap.org/img/wn/${city?.icon}@4x.png",
+                                    contentDescription = "Weather Icon",
+                                    modifier = Modifier.size(96.dp)
+                                )
+                            } else {
+                                Image(
+                                    painter = painterResource(id = R.drawable.sun),
+                                    contentDescription = "Weather Icon",
+                                    modifier = Modifier.size(96.dp)
+                                )
+                            }
+                        }
 
+                        // Temperature
                         Text(
-                            text = "${city?.temperature ?: 0}°",
-                            fontSize = 72.sp,
+                            text = "${city?.temperature?.toInt() ?: 0}°",
+                            style = MaterialTheme.typography.displayLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                shadow = Shadow(
+                                    color = Color.Black.copy(alpha = 0.3f),
+                                    offset = androidx.compose.ui.geometry.Offset(2f, 2f),
+                                    blurRadius = 8f
+                                )
+                            ),
                             color = Color.White,
                             modifier = Modifier.padding(vertical = 16.dp)
                         )
 
-                        Text(
-                            text = city?.weather ?: "",
-                            fontSize = 24.sp,
-                            color = Color.White.copy(alpha = 0.7f)
-                        )
+                        // Weather description
+                        city?.weather?.let { weather ->
+                            Text(
+                                text = weather.uppercase(),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Medium,
+                                    shadow = Shadow(
+                                        color = Color.Black.copy(alpha = 0.2f),
+                                        offset = Offset(1f, 1f),
+                                        blurRadius = 4f
+                                    )
+                                ),
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
-
 
 @Preview
 @Composable

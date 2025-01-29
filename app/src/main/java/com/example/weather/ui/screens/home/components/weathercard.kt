@@ -27,86 +27,156 @@ import androidx.compose.material3.Icon
 import com.example.weater.R
 import com.example.weather.data.City
 import coil.compose.AsyncImage
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.text.font.FontWeight
 
 
 @Composable
 fun WeatherCard(city: City, onCityClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .fillMaxWidth()
-            .clickable(onClick = onCityClick),
+            .clickable(onClick = onCityClick)
+            .graphicsLayer {
+                shadowElevation = 8.dp.toPx()
+                shape = RoundedCornerShape(24.dp)
+                clip = true
+            },
         colors = CardDefaults.cardColors(
-            containerColor = Color.Gray.copy(alpha = 0.3f)),
-        shape = RoundedCornerShape(90.dp)
+            containerColor = Color.Transparent
+        ),
+        shape = RoundedCornerShape(24.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF6B8DD6),
+                            Color(0xFF8F6BD6)
+                        ),
+                        start = Offset(0f, 0f),
+                        end = Offset(1f, 1f)
+                    )
+                )
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (city.icon != null) {
-                    AsyncImage(
-                        model = "https://openweathermap.org/img/wn/${city.icon}@2x.png",
-                        contentDescription = "Weather Icon",
-                        modifier = Modifier.size(40.dp)
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.sun),
-                        contentDescription = "Weather Icon",
-                        modifier = Modifier.size(40.dp)
-                    )
+                // Header with temperature and icon
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = "Location",
+                                tint = Color.White.copy(alpha = 0.9f),
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = city.name,
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    shadow = Shadow(
+                                        color = Color.Black.copy(alpha = 0.2f),
+                                        offset = Offset(1f, 1f),
+                                        blurRadius = 4f
+                                    )
+                                ),
+                                color = Color.White
+                            )
+                        }
+
+                        city.weather?.let { weather ->
+                            Text(
+                                text = weather.uppercase(),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
+                    }
+
+                    // Weather icon with halo effect
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(72.dp)
+                            .background(
+                                brush = Brush.radialGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.2f),
+                                        Color.Transparent
+                                    )
+                                ),
+                                shape = CircleShape
+                            )
+                    ) {
+                        if (city.icon != null) {
+                            AsyncImage(
+                                model = "https://openweathermap.org/img/wn/${city.icon}@4x.png",
+                                contentDescription = "Weather Icon",
+                                modifier = Modifier.size(56.dp)
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(id = R.drawable.sun),
+                                contentDescription = "Weather Icon",
+                                modifier = Modifier.size(56.dp)
+                            )
+                        }
+                    }
                 }
 
+                // Temperature display
                 Text(
                     text = "${city.temperature?.toInt() ?: 0}°",
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.padding(start = 8.dp),
-                    color = Color.White
-                )
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Location",
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.White
-                )
-                Text(
-                    text = city.name,
+                    style = MaterialTheme.typography.displayMedium.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        shadow = Shadow(
+                            color = Color.Black.copy(alpha = 0.3f),
+                            offset = Offset(2f, 2f),
+                            blurRadius = 8f
+                        )
+                    ),
                     color = Color.White,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(start = 4.dp)
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
-            }
-
-            city.weather?.let { weather ->
-                Text(
-                    text = weather,
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                }
             }
         }
     }
-}
+
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun WeatherCellPreview() {
     WeaterTheme {
-        WeatherCard(city = City(name = "Paris"), onCityClick = {})
+        WeatherCard(
+            city = City(
+                name = "Paris",
+                temperature = 22.5,
+                weather = "Partly Cloudy"
+            ),
+            onCityClick = {}
+        )
     }
 }
