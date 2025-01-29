@@ -2,6 +2,10 @@
 
 A sleek weather application built with Jetpack Compose that demonstrates modern Android development practices.
 
+## 📱 Demo
+
+https://github.com/user-attachments/assets/a9627c42-74b6-45d3-9e47-b5a1dd9b5a74
+
 ## ✨ Features
 
 - 🎨 Modern UI with frosted glass effects
@@ -100,13 +104,18 @@ Uses OpenWeatherMap API for weather data:
 ## 🚀 Future Improvements
 
 - [ ] 🔧 Weather widgets implementation
+- [ ] 📵 Enhanced offline support
+- [ ] 🔔 Weather notifications system
+- [ ] 📍 Location-based weather detection
 - [ ] 📅 5-day weather forecasts
+- [ ] 🧪 Unit and integration tests
 - [ ] 🗺️ Interactive weather maps
 - [ ] 📤 Weather data sharing
 - [ ] 🌡️ Multiple temperature units
 - [ ] ⚠️ Weather alerts
 - [ ] 🎨 Custom themes
 - [ ] 📱 Tablet optimization
+- [ ] 🔧 Widget support
 - [ ] 📊 More detailed weather information
 
 ## 📄 License
